@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Resultat extends Model
 {
     use HasFactory;
+    protected $fillable = ["nom", "description", "image", "portraits_id"];
 
     public function portrait(){
         return $this->hasOne(Portrait::class);

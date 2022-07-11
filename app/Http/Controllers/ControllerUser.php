@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ControllerUser extends Controller
 {
@@ -26,7 +27,21 @@ class ControllerUser extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255|min:3',
+            'email' => 'required|email',
+            'password' => 'required|Confirmed'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["msg" => "Donne moi des données correctes"]);    
+        }
+
+        $validated = $validator->validated();
+        if(User::create($validated)){
+            return response()->json(["msg" => "User créé avec succè"]);
+        } else {
+            return response()->json(["msg" => "Echec"]);
+        }
     }
 
     /**
@@ -50,7 +65,26 @@ class ControllerUser extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255|min:3',
+            'email' => 'required|email',
+            'password' => 'required|Confirmed'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["msg" => "Donne moi des données correctes"]);    
+        }
+
+        $validated = $validator->validated();
+
+        $user->name = $validated->name;
+        $user->email = $validated->email;
+        $user->password = Hash::make($validated->password);
+
+        if($user->save()){
+            return response()->json($user);
+        } else {
+            return response()->json(["msg" => "Echec"]);
+        }
     }
 
     /**
@@ -61,6 +95,6 @@ class ControllerUser extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        return response()->json(["msg" => $user->delete()]);
     }
 }

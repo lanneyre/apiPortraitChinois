@@ -80,9 +80,9 @@ class ControllerPortrait extends Controller
 
         $validated = $validator->validated();
 
-        $portrait->nom = $request->nom;
-        $portrait->description = $request->description;
-        $portrait->image = $request->image;
+        $portrait->nom = $validated->nom;
+        $portrait->description = $validated->description;
+        $portrait->image = $validated->image;
 
         if($portrait->save()){
             return response()->json($portrait);

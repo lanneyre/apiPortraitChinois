@@ -66,6 +66,26 @@ class ControllerQuestion extends Controller
     public function update(Request $request, Question $question)
     {
         //
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|max:255|min:3',
+            'description' => '',
+            'image' => ''
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["msg" => "Donne moi des données correctes"]);    
+        }
+
+        $validated = $validator->validated();
+
+        $question->nom = $validated->nom;
+        $question->description = $validated->description;
+        $question->image = $validated->image;
+
+        if($question->save()){
+            return response()->json($question);
+        } else {
+            return response()->json(["msg" => "Echec"]);
+        }
     }
 
     /**
@@ -77,5 +97,13 @@ class ControllerQuestion extends Controller
     public function destroy(Question $question)
     {
         //
+        foreach($question->reponses as $reponse){
+            $reponse->delete();
+        }
+        if($question->delete()){
+            return response()->json(["msg" => "suppr ok"]);
+        } else {
+            return response()->json(["msg" => "Echec"]);
+        }
     }
 }
