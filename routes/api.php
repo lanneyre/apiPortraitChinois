@@ -34,6 +34,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::resource("portrait", ControllerPortrait::class)->except(["create", "edit"]);
 // Route::apiResource("portrait", ControllerPortrait::class);
 
+Route::group(["prefix" => "question"], function(){
+    //Route::get("/", [Question::class, "index"])->name("question.index");
+    Route::post("/questionWithReponses", [ControllerQuestion::class, "questionWithReponses"])->name("question.questionWithReponses");
+    Route::get("/questionToPortrait/{question}/{portrait}", [ControllerQuestion::class, "questionToPortrait"])->name("question.questionToPortrait");
+    Route::delete("/delQuestionToPortrait/{question}/{portrait}", [ControllerQuestion::class, "delQuestionToPortrait"])->name("question.delQuestionToPortrait");
+});
+
 Route::apiResources([
     'portrait' => ControllerPortrait::class,
     'question' => ControllerQuestion::class,
@@ -42,9 +49,9 @@ Route::apiResources([
     'user' => ControllerUser::class,
 ]);
 
-// Route::group(["prefix" => "question"], function(){
-//     Route::get("/", [Question::class, "index"])->name("question.index");
-// });
+
+
+
 
 // Route::group(["prefix" => "reponse"], function(){
 //     Route::get("/", [Reponse::class, "index"])->name("reponse.index");

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class ControllerUser extends Controller
 {
@@ -30,13 +31,14 @@ class ControllerUser extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255|min:3',
             'email' => 'required|email',
-            'password' => 'required|Confirmed'
+            'password' => 'required|confirmed'
         ]);
         if ($validator->fails()) {
             return response()->json(["msg" => "Donne moi des données correctes"]);    
         }
 
         $validated = $validator->validated();
+        $validated['password'] = Hash::make($validated['password']);
         if(User::create($validated)){
             return response()->json(["msg" => "User créé avec succè"]);
         } else {
@@ -76,9 +78,9 @@ class ControllerUser extends Controller
 
         $validated = $validator->validated();
 
-        $user->name = $validated->name;
-        $user->email = $validated->email;
-        $user->password = Hash::make($validated->password);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->password = Hash::make($validated['password']);
 
         if($user->save()){
             return response()->json($user);

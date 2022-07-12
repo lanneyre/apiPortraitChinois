@@ -11,6 +11,6 @@ class Reponse extends Model
     protected $fillable = ["nom", "description", "image", "point", 'question_id'];
 
     public function question(){
-        return $this->hasOne(Question::class);
+        return $this->belongsTo(Question::class);
     }
 }

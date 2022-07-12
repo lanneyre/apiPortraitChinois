@@ -28,7 +28,7 @@ class ControllerReponse extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nom' => 'required|unique:portraits|max:255|min:3',
+            'nom' => 'required|max:255|min:3',
             'description' => 'required|min:10',
             'image' => '',
             'point' => 'integer|min:1',
@@ -55,6 +55,7 @@ class ControllerReponse extends Controller
     public function show(Reponse $reponse)
     {
         //
+        $reponse = Reponse::Where("id", $reponse->id)->with("questions")->first();
         return response()->json($reponse);
     }
 
@@ -102,6 +103,11 @@ class ControllerReponse extends Controller
      */
     public function destroy(Reponse $reponse)
     {
-        return reponse()->json(["msg" => $reponse->delete()]);
+        return response()->json(["msg" => $reponse->delete()]);
+    }
+
+    public function reponseWithQuestion(Reponse $reponse){
+        $question = $reponse->question;
+        return response()->json($question);
     }
 }
