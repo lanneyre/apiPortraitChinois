@@ -27,7 +27,7 @@
     </style>
 </head>
 <body>
-    <main class="container">
+    <main class="container mt-4">
         <section class="row">
             <article class="col-8">
                 @yield("listing")
