@@ -2,7 +2,7 @@
 
 @section("listing")
     <h1>Listing des portraits chinois <a href="{{route("portrait.create")}}" class="btn btn-link"><i class="fa-solid fa-plus"></i></a></h1>
-
+    @include("layout.message")
     <table class="table">
         <thead>
             <tr>
@@ -30,7 +30,7 @@
                         @method("delete")
                         <button type="submit" class="btn btn-link"><i class="fa-solid fa-trash-can"></i></button>
                     </form>
-                    
+
                 </td>
             </tr>
             @endforeach
@@ -40,5 +40,6 @@
 
 
 @section("aside")
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam natus eos quam, nihil doloribus quidem corporis est eius illum ipsam dolor earum aliquid laborum porro aperiam officia quasi velit pariatur.
+Un portrait chinois est un jeu littéraire de type questionnaire de Proust où il s'agit de déceler certains aspects de la personnalité d'un individu ou d'identifier ses goûts ou ses préférences personnelles.
+Vous allez donc devoir créer une API, à l’aide d’un framework, permettant de gérer une bdd sur ce thème et permettant ce qui suit :
 @endsection

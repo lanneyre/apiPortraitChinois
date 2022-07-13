@@ -40,14 +40,27 @@ class ControllerPortraitWeb extends Controller
      */
     public function store(Request $request)
     {
+        $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
+        $messages = [
+			'nom.max' => 'Le nom du portrait ne peut avoir plus de :max caractères.',
+            'nom.max' => 'Le nom du portrait existe déjà.',
+            'nom.min' => 'Le nom du portrait ne peut avoir moins de :min caractères.',
+			'nom.required' => 'Vous devez saisir un nom pour le portrait.',
+			'description.min' => 'La description du portrait ne peut avoir moins de :min caractères.',
+			'description.required' => 'Vous devez saisir la description.',
+			'imageOrdi.image' => 'Le fichier doit être une image.',
+			'imageUrl.regex' => 'L\'url de l\'image n\'est pas bonne.',
+
+		];
         $validator = Validator::make($request->all(), [
             'nom' => 'required|unique:portraits|max:255|min:3',
             'description' => 'required|min:10',
             'imageOrdi' => 'image|nullable',
-            'imageUrl' => 'url|nullable'
-        ]);
+            'imageUrl' => 'nullable|regex:'.$regex
+        ], $messages);
+
         if ($validator->fails()) {
-            return redirect()->back()->with(["error"=>"Pb de data"]);
+            return redirect()->back()->withErrors($validator);
         }
 
         $validated = $validator->validated();
@@ -59,12 +72,10 @@ class ControllerPortraitWeb extends Controller
             $validated['image'] = $url;
         }
 
-        
-
         if(Portrait::create($validated)){
             return redirect()->route('portrait.index')->with(["success" => "Création OK"]);
         } else {
-            return redirect()->back()->with(["error"=>"erreur Creation"]);
+            return redirect()->back()->withErrors(["erreur Creation"]);
         }
         return redirect()->back();
     }
@@ -105,22 +116,50 @@ class ControllerPortraitWeb extends Controller
     public function update(Request $request, Portrait $portrait)
     {
         $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
+        $messages = [
+			'nom.max' => 'Le nom du portrait ne peut avoir plus de :max caractères.',
+            'nom.min' => 'Le nom du portrait ne peut avoir moins de :min caractères.',
+			'nom.required' => 'Vous devez saisir un nom pour le portrait.',
+			'description.min' => 'La description du portrait ne peut avoir moins de :min caractères.',
+			'description.required' => 'Vous devez saisir la description.',
+			'imageOrdi.image' => 'Le fichier doit être une image.',
+			'imageUrl.regex' => 'L\'url de l\'image n\'est pas bonne.',
+
+		];
+
         $validator = Validator::make($request->all(), [
-            'nom' => 'required|unique:portraits|max:255|min:3',
+            'nom' => 'required|max:255|min:3',
             'description' => 'required|min:10',
             'imageOrdi' => 'image|nullable',
-            'imageUrl' => 'regex:'.$regex.'|nullable'
-        ]);
+            'imageUrl' => 'nullable|regex:'.$regex
+        ], $messages);
         if ($validator->fails()) {
-            return redirect()->back()->with(["error"=>"Pb de data"]);
+            return redirect()->back()->withErrors($validator);
         }
 
         $validated = $validator->validated();
 
         $portrait->nom = $validated['nom'];
-        
         $portrait->description = $validated['description'];
-        //  $portrait->image = $validated['image'];
+        //dd($validated);
+        if(!empty($validated['imageOrdi']) || !empty($validated['imageUrl'])){
+            if(!empty($portrait->image)){
+                $path = str_replace(url("/"), "", $portrait->image);
+                //dump($path);
+                if($path != $portrait->image){
+                    Storage::delete(str_replace("storage", "public", $path));
+                }
+            }
+            $validated['image'] = $validated['imageUrl'];
+            if ($request->hasFile('imageOrdi')) {
+                $nameFile = uniqid().".".$request->imageOrdi->extension();
+                $path = $request->imageOrdi->storeAs('public/img', $nameFile);
+                $url = url("/")."/".str_replace("public", "storage", $path);
+                $validated['image'] = $url;
+            }
+            $portrait->image = $validated['image'];
+        }
+        //
 
         if($portrait->save()){
             return redirect()->back()->with(["success" => "edit OK"]);

@@ -2,7 +2,7 @@
 
 @section("aside")
 <h3>{{$portrait->nom}}</h3>
-@if(!empty(session('error'))) {{session('error')}} @endif
+
 <form action="{{route('portrait.update', $portrait)}}" method="post" enctype="multipart/form-data">
     @csrf
     @method('PUT')
@@ -15,8 +15,18 @@
         <textarea name="description" id="description" class="form-control">{{$portrait->description}}</textarea>
     </div>
     <div class="form-group">
-        <label for="image">Image</label>
-        <input type="file" name="image" id="image" placeholder="image" class="form-control">
+        <br>
+        <figure>
+            <img src='@if(!empty($portrait->image)) {{$portrait->image}} @else {{"/storage/img/noImage.jpg"}} @endif ' alt="{{$portrait->nom}}" class="miniatureShow" >
+        </figure>
+    </div>
+    <div class="form-group">
+        <label for="imageOrdi">Image depuis l'ordinateur</label>
+        <input type="file" name="imageOrdi" id="imageOrdi" placeholder="image" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="imageUrl">Url Image</label>
+        <input type="text" name="imageUrl" id="imageUrl" placeholder="image" class="form-control">
     </div>
     <div class="row mt-2 mb-2">
         <div class="col d-flex"><input type="reset" value="Reset" class="btn btn-secondary"></div>
