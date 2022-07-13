@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ControllerReponse;
+use App\Http\Controllers\ControllerPortraitWeb;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,3 +20,5 @@ Route::get('/', function () {
 });
 
 Route::get("testReponseWithQuestion/{reponse}", [ControllerReponse::class, "reponseWithQuestion"]);
+
+Route::resource('portrait', ControllerPortraitWeb::class);
